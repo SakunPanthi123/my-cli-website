@@ -1,12 +1,20 @@
 import Database, { type Database as DatabaseType } from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create database path
-const dbPath = path.join(__dirname, '..', '..', 'nepal_explorer.db');
+// Create database path in user's home directory to avoid permission issues
+const dbPath = path.join(os.homedir(), '.explore-nepal-cli', 'nepal_explorer.db');
+
+// Ensure the directory exists
+import fs from 'fs';
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+	fs.mkdirSync(dbDir, { recursive: true });
+}
 
 // Initialize database
 export const db: DatabaseType = new Database(dbPath);

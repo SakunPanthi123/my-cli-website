@@ -147,6 +147,7 @@ Create a beautiful interactive CLI webpage themed "Explore Nepal" using Pastel f
 - **✅ DATABASE**: Messages now save to and load from real database ✨
 - **✅ DATABASE**: TypeScript export issues resolved with function-based approach ✨
 - **✅ DATABASE**: Automatic database initialization with Nepal destinations and tips ✨
+- **✅ DATABASE**: Fixed database path for npm global installation - now uses user home directory ✨
 
 **What's New:**
 - **Fixed TypeScript Configuration**: Removed strict sindresorhus/tsconfig for easier development

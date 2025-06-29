@@ -1,6 +1,6 @@
 {
 	"name": "explore-nepal-cli",
-	"version": "0.0.1",
+	"version": "0.0.22",
 	"license": "MIT",
 	"bin": "dist/cli.js",
 	"type": "module",

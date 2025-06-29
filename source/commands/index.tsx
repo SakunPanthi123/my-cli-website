@@ -25,20 +25,20 @@ const nepalAscii = figlet.textSync('EXPLORE NEPAL', {
 const nepalFlag = `
 🟦🟦
 🟦🟥🟦🟦
-🟦🟥🟥🟥🟦🟦
-🟦🟥🟥🟥🟥🟥🟦🟦
-🟦🟥🟥🟥🟥🟥🟥🟥🟦
-🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
-🟦🟥🟦🟥🟥🟥🟦🟥🟥🟥🟥🟦
-🟦🟥🟥🟦🟦🟦🟥🟥🟥🟥🟥🟥🟥🟦
-🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
-🟦🟥🟥🟥🟥🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦🟦
+🟦🟥🟥🟥🟦
+🟦🟥🟥🟥🟥🟥🟦
+🟦🟥🟥🟥🟥🟥🟥🟦
+🟦🟥🟥🟥🟥🟥🟥🟥🟥🟦
+🟦🟥🟦🟥🟥🟥🟦🟥🟥🟥🟦
+🟦🟥🟥🟦🟦🟦🟥🟥🟥🟥🟥🟥🟦
+🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
+🟦🟥🟥🟥🟥🟥🟥🟦🟦🟦🟦🟦🟦🟦🟦
 🟦🟥🟥🟥🟥🟥🟥🟦
 🟦🟥🟥🟥🟦🟥🟥🟥🟦
 🟦🟥🟥🟦🟥🟦🟥🟥🟥🟦
 🟦🟥🟥🟦🟥🟦🟥🟥🟥🟥🟦
 🟦🟥🟥🟥🟦🟥🟥🟥🟥🟥🟥🟦
-🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
+    🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
 🟦🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥🟦
 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
 `;
@@ -135,26 +135,31 @@ export default function Index({}: Props) {
 	return (
 		<Box flexDirection="column" padding={2}>
 			{/* Header with ASCII Art */}
-			<Box flexDirection="column" alignItems="center" marginBottom={2}>
-				<Text color="red" bold>
-					{nepalAscii}
-				</Text>
-				<Box marginTop={1}>
-					<Text color="blue" bold>
-						🇳🇵 Welcome to the Interactive Nepal Explorer 🇳🇵
+			<Box flexDirection="row" alignItems="center" gap={4} marginBottom={2}>
+				<Box flexDirection="column" alignItems="center" marginBottom={2}>
+					<Text color="red" bold>
+						{nepalAscii}
 					</Text>
+					<Box marginTop={1}>
+						<Text color="blue" bold>
+							🇳🇵 Welcome to the Interactive Nepal Explorer 🇳🇵
+						</Text>
+					</Box>
+					<Box marginTop={1}>
+						<Text color="gray">
+							Discover the beauty, culture, and adventures of Nepal right from your terminal!
+						</Text>
+					</Box>
 				</Box>
-				<Box marginTop={1}>
-					<Text color="gray">
-						Discover the beauty, culture, and adventures of Nepal right from your terminal!
-					</Text>
+			
+				{/* Nepal Flag */}
+				<Box justifyContent="center" marginBottom={2}>
+					<Text>{nepalFlag}</Text>
 				</Box>
+
+				
 			</Box>
 
-			{/* Nepal Flag */}
-			<Box justifyContent="center" marginBottom={2}>
-				<Text>{nepalFlag}</Text>
-			</Box>
 
 			{/* Quick Stats */}
 			<Box flexDirection="row" justifyContent="space-around" marginBottom={2}>

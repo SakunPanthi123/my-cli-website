@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { SelectInput, type SelectOption } from '../components/ui.js';
 
 const helpSections = [
@@ -221,6 +221,20 @@ const helpSections = [
 export default function Help() {
 	const [currentView, setCurrentView] = useState<'menu' | 'section'>('menu');
 	const [selectedSection, setSelectedSection] = useState<typeof helpSections[0] | null>(null);
+
+	// Handle input for section view - always call the hook but only act when in section view
+	useInput((input, key) => {
+		if (currentView === 'section' && selectedSection) {
+			if (key.escape) {
+				// ESC key goes back to main menu
+				process.exit(0);
+			} else {
+				// Any other key goes back to help menu
+				setCurrentView('menu');
+				setSelectedSection(null);
+			}
+		}
+	});
 
 	const sectionOptions: SelectOption[] = helpSections.map(section => ({
 		label: `${section.emoji} ${section.name}`,

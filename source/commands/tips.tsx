@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { SelectInput, type SelectOption } from '../components/ui.js';
 
 // Travel tips data
@@ -232,6 +232,20 @@ export default function Tips() {
 	const [currentView, setCurrentView] = useState<'categories' | 'tips' | 'detail'>('categories');
 	const [selectedCategory, setSelectedCategory] = useState<typeof tipCategories[0] | null>(null);
 	const [selectedTip, setSelectedTip] = useState<typeof tipCategories[0]['tips'][0] | null>(null);
+
+	// Handle input for detail view - always call the hook but only act when in detail view
+	useInput((input, key) => {
+		if (currentView === 'detail' && selectedTip) {
+			if (key.escape) {
+				// ESC key goes back to main menu
+				process.exit(0);
+			} else {
+				// Any other key goes back to tips list
+				setCurrentView('tips');
+				setSelectedTip(null);
+			}
+		}
+	});
 
 	const categoryOptions: SelectOption[] = tipCategories.map(category => ({
 		label: `${category.emoji} ${category.name}`,

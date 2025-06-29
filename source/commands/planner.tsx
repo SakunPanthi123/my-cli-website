@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { SelectInput, TextInput, type SelectOption } from '../components/ui.js';
 
 interface TripPlan {
@@ -107,6 +107,20 @@ export default function Planner() {
 		activities: []
 	});
 	const [planStep, setPlanStep] = useState<'name' | 'duration' | 'budget' | 'difficulty' | 'interests' | 'review'>('name');
+
+	// Handle input for template/result views - always call the hook but only act when needed
+	useInput((input, key) => {
+		if ((currentView === 'template' && selectedTemplate) || currentView === 'result') {
+			if (key.escape) {
+				// ESC key goes back to main menu
+				process.exit(0);
+			} else {
+				// Any other key goes back to planner main
+				setCurrentView('main');
+				setSelectedTemplate(null);
+			}
+		}
+	});
 
 	const mainOptions: SelectOption[] = [
 		{ label: '📋 Use Trip Template', value: 'template' },

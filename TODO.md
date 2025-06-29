@@ -138,6 +138,9 @@ Create a beautiful interactive CLI webpage themed "Explore Nepal" using Pastel f
 - **✅ FIXED**: Detail view navigation - "Press any key to return to list" now works correctly
 - **✅ FIXED**: watch.sh script - removed invalid --name parameter
 - **✅ FIXED**: Multiline input submission - changed to Ctrl+S to avoid terminal conflicts ✨
+- **✅ FIXED**: Deep navigation issue - all detail/end pages now have proper input handling ✨
+- **✅ FIXED**: Missing useInput in tips, planner, and help commands - no more automatic exits ✨
+- **✅ ENHANCED**: ESC key support - provides quick exit to main menu from any detail view ✨
 - **✅ IMPROVED**: Seamless navigation flow throughout the entire CLI experience
 - **✅ ENHANCED**: All command components now properly handle state transitions
 - **✅ DATABASE**: Full SQLite database integration restored and working ✨

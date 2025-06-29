@@ -143,10 +143,16 @@ export default function Destinations() {
 	const [selectedDestination, setSelectedDestination] = useState<typeof destinations[0] | null>(null);
 
 	// Handle input for detail view - always call the hook but only act when in detail view
-	useInput(() => {
+	useInput((input, key) => {
 		if (currentView === 'detail' && selectedDestination) {
-			setCurrentView('list');
-			setSelectedDestination(null);
+			if (key.escape) {
+				// ESC key goes back to main menu
+				process.exit(0);
+			} else {
+				// Any other key goes back to list
+				setCurrentView('list');
+				setSelectedDestination(null);
+			}
 		}
 	});
 

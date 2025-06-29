@@ -1,0 +1,286 @@
+import Database, { type Database as DatabaseType } from 'better-sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create database path
+const dbPath = path.join(__dirname, '..', '..', 'nepal_explorer.db');
+
+// Initialize database
+export const db: DatabaseType = new Database(dbPath);
+
+// Enable WAL mode for better performance
+db.pragma('journal_mode = WAL');
+
+// Create tables
+export function initializeDatabase() {
+	// Destinations table
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS destinations (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL,
+			region TEXT NOT NULL,
+			description TEXT,
+			altitude INTEGER,
+			best_season TEXT,
+			activities TEXT,
+			difficulty_level TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)
+	`);
+
+	// Messages/Reviews table
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS messages (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			destination_id INTEGER,
+			username TEXT NOT NULL,
+			message TEXT NOT NULL,
+			rating INTEGER CHECK(rating >= 1 AND rating <= 5),
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (destination_id) REFERENCES destinations (id)
+		)
+	`);
+
+	// User interactions/visits tracking
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS user_interactions (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			destination_id INTEGER,
+			action TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (destination_id) REFERENCES destinations (id)
+		)
+	`);
+
+	// Travel tips table
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS travel_tips (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			category TEXT NOT NULL,
+			title TEXT NOT NULL,
+			content TEXT NOT NULL,
+			author TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)
+	`);
+
+	// Insert initial data
+	insertInitialData();
+}
+
+function insertInitialData() {
+	// Check if data already exists
+	const count = db.prepare('SELECT COUNT(*) as count FROM destinations').get() as { count: number };
+	
+	if (count.count > 0) {
+		return; // Data already exists
+	}
+
+	// Insert initial destinations
+	const insertDestination = db.prepare(`
+		INSERT INTO destinations (name, region, description, altitude, best_season, activities, difficulty_level)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`);
+
+	const destinations = [
+		{
+			name: 'Mount Everest Base Camp',
+			region: 'Khumbu',
+			description: 'World\'s highest mountain base camp trek through Sherpa villages and monasteries',
+			altitude: 5364,
+			best_season: 'March-May, September-November',
+			activities: 'Trekking, Photography, Cultural exploration',
+			difficulty_level: 'Challenging'
+		},
+		{
+			name: 'Annapurna Circuit',
+			region: 'Annapurna',
+			description: 'Classic trek around the Annapurna massif with diverse landscapes',
+			altitude: 5416,
+			best_season: 'March-May, October-December',
+			activities: 'Trekking, Mountain views, Cultural immersion',
+			difficulty_level: 'Moderate to Challenging'
+		},
+		{
+			name: 'Kathmandu Durbar Square',
+			region: 'Kathmandu Valley',
+			description: 'Historic palace complex with ancient temples and architecture',
+			altitude: 1400,
+			best_season: 'October-March',
+			activities: 'Sightseeing, Cultural exploration, Photography',
+			difficulty_level: 'Easy'
+		},
+		{
+			name: 'Pokhara Lakeside',
+			region: 'Western Hills',
+			description: 'Beautiful lake city with stunning mountain views',
+			altitude: 822,
+			best_season: 'October-March',
+			activities: 'Boating, Paragliding, Relaxation',
+			difficulty_level: 'Easy'
+		},
+		{
+			name: 'Chitwan National Park',
+			region: 'Terai',
+			description: 'UNESCO World Heritage site rich in wildlife including rhinos and tigers',
+			altitude: 150,
+			best_season: 'October-March',
+			activities: 'Wildlife safari, Jungle walks, Canoeing',
+			difficulty_level: 'Easy'
+		},
+		{
+			name: 'Lumbini',
+			region: 'Terai',
+			description: 'Birthplace of Lord Buddha, sacred pilgrimage site',
+			altitude: 150,
+			best_season: 'October-March',
+			activities: 'Spiritual journey, Meditation, Cultural exploration',
+			difficulty_level: 'Easy'
+		},
+		{
+			name: 'Bandipur',
+			region: 'Central Hills',
+			description: 'Preserved medieval town with traditional Newari architecture',
+			altitude: 1030,
+			best_season: 'October-March',
+			activities: 'Cultural exploration, Hiking, Photography',
+			difficulty_level: 'Easy'
+		},
+		{
+			name: 'Gokyo Lakes',
+			region: 'Khumbu',
+			description: 'Sacred lakes at high altitude with pristine mountain views',
+			altitude: 4700,
+			best_season: 'March-May, September-November',
+			activities: 'Trekking, Photography, Lake exploration',
+			difficulty_level: 'Challenging'
+		}
+	];
+
+	destinations.forEach(dest => {
+		insertDestination.run(
+			dest.name,
+			dest.region,
+			dest.description,
+			dest.altitude,
+			dest.best_season,
+			dest.activities,
+			dest.difficulty_level
+		);
+	});
+
+	// Insert initial travel tips
+	const insertTip = db.prepare(`
+		INSERT INTO travel_tips (category, title, content, author)
+		VALUES (?, ?, ?, ?)
+	`);
+
+	const tips = [
+		{
+			category: 'Health',
+			title: 'Altitude Sickness Prevention',
+			content: 'Ascend gradually, stay hydrated, avoid alcohol, and consider medication if prone to altitude sickness. Listen to your body and descend if symptoms worsen.',
+			author: 'Nepal Tourism Board'
+		},
+		{
+			category: 'Packing',
+			title: 'Essential Trekking Gear',
+			content: 'Pack layers for varying temperatures, waterproof gear, good trekking boots, first aid kit, and portable charger. Don\'t overpack - you can buy essentials in Kathmandu.',
+			author: 'Experienced Trekker'
+		},
+		{
+			category: 'Culture',
+			title: 'Temple Etiquette',
+			content: 'Remove shoes before entering temples, dress modestly, don\'t point feet toward religious objects, and ask permission before photographing people.',
+			author: 'Cultural Guide'
+		},
+		{
+			category: 'Safety',
+			title: 'Trekking Safety',
+			content: 'Trek with a guide or group, inform someone of your plans, carry emergency supplies, and get proper travel insurance that covers high-altitude activities.',
+			author: 'Mountain Safety Expert'
+		},
+		{
+			category: 'Budget',
+			title: 'Money Matters',
+			content: 'Carry cash (NPR) as ATMs are scarce in remote areas. Budget $30-50/day for teahouse treks, $20-30/day for local travel. Bargain respectfully in local markets.',
+			author: 'Budget Travel Expert'
+		}
+	];
+
+	tips.forEach(tip => {
+		insertTip.run(tip.category, tip.title, tip.content, tip.author);
+	});
+}
+
+// Database query functions
+export function getAllDestinations() {
+	const stmt = db.prepare('SELECT * FROM destinations ORDER BY name');
+	return stmt.all();
+}
+
+export function getDestinationsByRegion(region: string) {
+	const stmt = db.prepare('SELECT * FROM destinations WHERE region = ? ORDER BY name');
+	return stmt.all(region);
+}
+
+export function getDestinationById(id: number) {
+	const stmt = db.prepare('SELECT * FROM destinations WHERE id = ?');
+	return stmt.get(id);
+}
+
+export function insertMessage(destinationId: number | null, username: string, message: string, rating: number) {
+	const stmt = db.prepare(`
+		INSERT INTO messages (destination_id, username, message, rating)
+		VALUES (?, ?, ?, ?)
+	`);
+	return stmt.run(destinationId, username, message, rating);
+}
+
+export function getMessagesByDestination(destinationId: number) {
+	const stmt = db.prepare(`
+		SELECT * FROM messages WHERE destination_id = ? ORDER BY created_at DESC
+	`);
+	return stmt.all(destinationId);
+}
+
+export function getAllMessages() {
+	const stmt = db.prepare('SELECT m.*, d.name as destination_name FROM messages m LEFT JOIN destinations d ON m.destination_id = d.id ORDER BY m.created_at DESC');
+	return stmt.all();
+}
+
+export function getAllTips() {
+	const stmt = db.prepare('SELECT * FROM travel_tips ORDER BY category, title');
+	return stmt.all();
+}
+
+export function getTipsByCategory(category: string) {
+	const stmt = db.prepare('SELECT * FROM travel_tips WHERE category = ? ORDER BY title');
+	return stmt.all(category);
+}
+
+export function insertUserInteraction(username: string, destinationId: number | null, action: string) {
+	const stmt = db.prepare(`
+		INSERT INTO user_interactions (username, destination_id, action)
+		VALUES (?, ?, ?)
+	`);
+	return stmt.run(username, destinationId, action);
+}
+
+export function getPopularDestinations() {
+	const stmt = db.prepare(`
+		SELECT d.*, COUNT(ui.id) as visit_count 
+		FROM destinations d 
+		LEFT JOIN user_interactions ui ON d.id = ui.destination_id 
+		GROUP BY d.id 
+		ORDER BY visit_count DESC, d.name
+	`);
+	return stmt.all();
+}
+
+// Initialize database on import
+initializeDatabase();
